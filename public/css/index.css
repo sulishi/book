@@ -1,0 +1,67 @@
+h2 {
+    font-size: 28px;
+    text-align: center;
+    color: #000000;
+    height: 55px;
+    background-color: #ddd;
+    line-height: 55px;
+}
+
+.main {
+    width: 100%;
+    margin: 70px 0 0 0;
+}
+
+.smallsea {
+    width: 80%;
+    margin: 0 auto;
+    border: 1px solid rgb(188, 232, 241);
+    height: 32px;
+    overflow: hidden;
+    border-radius: 5px;
+    position: relative;
+}
+
+#book {
+    position: relative;
+    height: 30px;
+    width: 78%;
+    font-size: 18px;
+    border: 0;
+    outline: none;
+    margin: 0 1%;
+}
+
+#search {
+    position: absolute;
+    width: 20%;
+    height: 32px;
+    border: 0;
+    background-color: rgb(217, 237, 247);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    outline: none;
+    font-size: 20px;
+}
+
+
+/* 
+footer {
+    margin-top: 300px;
+}
+
+footer p {
+    text-align: center;
+    color: #ccc;
+    line-height: 22px;
+}
+
+footer p a {
+    text-decoration: none;
+    color: rgb(49, 112, 143)
+} */
+
+input:-webkit-autofill {
+    -webkit-box-shadow: inset 0 0 0 1000px #fff;
+    background-color: transparent;
+}

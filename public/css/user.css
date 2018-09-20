@@ -1,0 +1,42 @@
+.usertip {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+}
+
+.usertip p {
+    text-align: center;
+    color: #333
+}
+
+.userlogin {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.userlogin input {
+    display: block;
+    margin: 0 auto;
+}
+
+#pwd {
+    border: 1px solid #ccc;
+    height: 32px;
+    width: 90%;
+    border-radius: 5px;
+    outline: none;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+}
+
+#ok {
+    background-color: #169bd5;
+    border: none;
+    color: #fff;
+    width: 80px;
+    height: 28px;
+    border-radius: 5px;
+}
