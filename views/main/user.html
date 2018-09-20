@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<body>
+    {% extends 'layout.html'%}{% block content %}
+    <header>
+        <a href="/"><span class="back"></span></a>
+        <h2>查询结果</h2>
+    </header>
+    <div class="usertip">
+        <p>请输入图书馆借书密码</p>
+        <p><i>提示：</i>初始密码为学号后六位</p>
+    </div>
+    <div class="userlogin">
+        <input type="password" name="pwd" id="pwd">
+        <input type="button" value="登录" id="ok">
+    </div>
+    <script src="/public/js/layout.js"></script>
+    <script src="/public/js/user.js"></script>
+    {% endblock%}

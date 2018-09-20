@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<body>
+    {% extends 'layout.html'%}{% block content %}
+    <header>
+        <a href="/"><span class="back"></span></a>
+        <h2>查询结果</h2>
+    </header>
+    {% if a %}
+    <div class="nosearch">
+        <h3>提示</h3>
+        <p>{{a}}</p>
+        <a href="{{last}}">返回搜索页</a>
+    </div>
+    {% else %}
+    <div class="usertip">
+        <p>每本书只可续借一次</p>
+        <p><i>提示：</i>续借时间时候从续借时间点开始</p>
+    </div>
+    <div class="center mybook">
+        {% for a in meinform%}
+        <div class="searched">
+            <div class="book">
+                <p><i> 图书名称：</i>{{a.bookname}}</p>
+                <p><i>书号：</i>{{a.number}}</p>
+                <p><i>所在书库：</i>{{a.where}}</p>
+                <p><i>当前借阅情况：</i>{{a.tip}}</p>
+                <p><i>还书日期：</i>{{a.data}}</p>
+                <p class="btn"><button class="renew" onclick="renew(this)" renewnumber="{{a.renewnumber}}" id1="{{a.id1}}" id2="{{a.id2}}" name="">续借</button></p>
+            </div>
+        </div>{% endfor %} {% endif %}
+        <div class="page"></div>
+        <script src="/public/js/book.js"></script>{% endblock%}

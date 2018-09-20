@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    {% extends 'layout.html'%}{% block content %}
+    <header>
+        <a href="/"><span class="back"></span></a>
+        <h2>查询结果</h2>
+    </header>{% if a %}
+    <div class="nosearch">
+        <h3>提示</h3>
+        <p>{{a}}</p>
+        <a href="{{last}}">返回搜索页</a>
+    </div>
+    {% else %}
+    <div class="center"> {% for inform in inform %}
+
+        <div class="searched">
+            <div class="book">
+                <p><i> 图书名称：</i>{{inform.bookname}}</p>
+                <p><i>作者：</i>{{inform.author}}</p>
+                <p><i>所在书库：</i>{{inform.where}}</p>
+                <p><i>索书号：</i>{{inform.search}}</p>
+                <p><i>{{inform.have}}</i></p>
+                <p class="btn"> <button class="collect" number="{{inform.search}}" onclick="collect(this)">收藏</button></p>
+            </div>
+        </div>
+        {% endfor%}
+
+
+    </div>
+    <div class="page">
+        <ul>
+            {% if page == 1 && page != pages%}
+            <li class="nopage">上一页</li>
+            <li>
+                <span>{{page}}/{{pages}}</span>
+            </li>
+            <li>
+                <a href="{{url}}?book={{book}}&page={{page+1}}">下一页</a>
+            </li>
+            {% elseif page == pages && pages != 1%}
+            <li>
+                <a href="{{url}}?book={{book}}&page={{page-1}}">上一页</a>
+            </li>
+            <li>
+                <span>{{page}}/{{pages}}</span>
+            </li>
+            <li class="nopage">下一页</li>
+            {% elseif page == pages == 1 %}
+            <li class="nopage">上一页</li>
+            <li>
+                <span>{{page}}/{{pages}}</span>
+            </li>
+            <li class="nopage">下一页</li>
+            {% else %}
+            <li>
+                <a href="{{url}}?book={{book}}&page={{page-1}}">上一页</a>
+            </li>
+            <li>
+                <span>{{page}}/{{pages}}</span>
+            </li>
+            <li>
+                <a href="{{url}}?book={{book}}&page={{page+1}}">下一页</a>
+            </li>
+            {% endif%}
+
+        </ul>
+    </div>{% endif %}{% endblock%}
+
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/public/css/search.css">
+    <link rel="stylesheet" href="/public/css/index.css">
+    <link rel="stylesheet" href="/public/css/layout.css">
+    <link rel="stylesheet" href="/public/css/user.css">
+    <script src="/public/js/layout.js"></script>
+    <title>图书查询</title>
+</head>
+
+<body>{% block content %}{% endblock %} {% if url == '/'%}
+    <div class="nav">
+        <li>
+            <a href="/"><span class="active" id="mainsearch"></span> 搜索</a>
+        </li>
+        <li>
+            <a href="/user/collect"> <span class="" id="maincollect"></span> 收藏</a>
+        </li>
+        <li>
+            <a href="/user"><span class="" id="mainme"></span> 我的</a>
+        </li>
+    </div>
+    {% elseif url == '/main/search'%}
+    <div class="nav">
+        <li>
+            <a href="/"><span class="active" id="mainsearch"></span> 搜索</a>
+        </li>
+        <li>
+            <a href="/user/collect"> <span class="" id="maincollect"></span> 收藏</a>
+        </li>
+        <li>
+            <a href="/user"><span class="" id="mainme"></span> 我的</a>
+        </li>
+    </div>
+    {% elseif url == '/user/inform' %}
+    <div class="nav">
+        <li>
+            <a href="/"><span  id="mainsearch"></span> 搜索</a>
+        </li>
+        <li>
+            <a href="/user/collect"> <span id="maincollect"></span> 收藏</a>
+        </li>
+        <li>
+            <a href="/user"><span  class="active" id="mainme"></span> 我的</a>
+        </li>
+    </div>
+    {% elseif url == '/user/collect'%}
+    <div class="nav">
+        <li>
+            <a href="/"><span  id="mainsearch"></span> 搜索</a>
+        </li>
+        <li>
+            <a href="/user/collect"> <span class="active" id="maincollect"></span> 收藏</a>
+        </li>
+        <li>
+            <a href="/user"><span id="mainme"></span> 我的</a>
+        </li>
+    </div>
+    {% endif%}
+</body>
+
+</html>

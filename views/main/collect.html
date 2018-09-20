@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<body>{% extends 'layout.html'%}{% block content %}
+    <header>
+        <a href="/"><span class="back"></span></a>
+        <h2>我的收藏</h2>
+    </header>{% if a %}
+    <div class="nosearch">
+        <h3>提示</h3>
+        <p>{{a}}</p>
+        <a href="{{last}}">返回搜索页</a>
+    </div>
+    {% else %}{% for b in bookcollect %}
+    <div class="center">
+        {% for a in b %}
+        <div class="searched">
+            <div class="book">
+                <p><i> 图书名称：</i>{{a.bookname}}</p>
+                <p><i>作者：</i>{{a.author}}</p>
+                <p><i>所在书库：</i>{{a.where}}</p>
+                <p><i>索书号：</i>{{a.search}}</p>
+                <p><i>{{a.have}}</i></p>
+                <p class="btn"> <button class="nocollect" number="{{a.search}}" onclick="nocollect(this)">取消收藏</button></p>
+            </div>
+        </div>{% endfor%} {% endfor%}</div>{% endif%}
+    <div class="page"></div>{% endblock%}
+</body>
+
+</html>

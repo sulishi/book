@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-euiv="X-UA-Compatible" content="ie=edge">
+    <title>图书查询</title>
+</head>
+
+<body>{% extends 'layout.html'%}{% block content %}
+    <header>
+        <h2>图书搜索</h2>
+    </header>
+    <div class="main">
+        <div class="smallsea">
+            <input type="text" name="search" id="book" placeholder="搜索书名">
+            <input type="button" value="搜索" id="search">
+        </div>
+    </div>
+    <footer>
+        <p>2018@西安邮电大学信息中心
+        </p>
+        <p><a href="https://zypc.xupt.edu.cn/"> 智邮普创工作室</a> 地址：图书馆514</p>
+    </footer>
+
+    <script src="/public/js/index.js"></script>
