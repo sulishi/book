@@ -7,11 +7,13 @@ var superagent = charset(require('superagent'));
 //加载body-parser 处理post过来的数据
 var bodyparser = require('body-parser');
 //加载cookies模块
-var cookies = require('cookies');
+var cookies= require('cookies');
 //加载模板处理模块
 var swig = require('swig');
 //创建app应用
 var app = express();
+//定时查询
+var schedule = require('node-schedule');
 
 //用户模型
 var User = require('./models/User');
@@ -42,18 +44,15 @@ app.post('/user/book',function(req,res){
     User.findOne({
         username:username
     }).then(function(userInfo){
-        if(userInfo){
-            getCookie(userInfo.username,userInfo.password).then(function(meinform){
+        if(userInfo.pwd){
+            getCookie(userInfo.username,userInfo.password,token).then(function(meinform){
                 res.json(meinform);
                 return;
             })
         } 
         else{   
-        var user = new User({
-        username:username,
-        password:pwd
-        });
-        getCookie(user.username,user.password).then(function(meinform){
+            userInfo.password = pwd;
+        getCookie(username,pwd,token).then(function(meinform){
             if(meinform == '密码不正确，请重新输入')
             {
                 res.json(meinform);
@@ -61,7 +60,7 @@ app.post('/user/book',function(req,res){
             else{
             res.json({meinform:meinform,
             url:'/user/book'});
-            return user.save();
+            return userInfo.save();
             }           
         })
         
@@ -69,7 +68,7 @@ app.post('/user/book',function(req,res){
     })
 
 })
-function getCookie(barcode,pwd){
+function getCookie(barcode,pwd,token){
     return new Promise(function(reslove,reject){
         superagent
     .post('http://222.24.3.7:8080/opac_two/reader/login_app.jsp')
@@ -80,8 +79,8 @@ function getCookie(barcode,pwd){
         var a = /str_message=密码不正确/;
         if(a.test(res.text) == false){
        cookies = res.header['set-cookie'];
-       getData(cookies).then(function(meinform){
-          reslove(meinform)
+       getData(cookies,token).then(function(meinform){
+          reslove({meinform:meinform,token:token})
        });}
        else{
            reslove('密码不正确，请重新输入');
@@ -90,7 +89,7 @@ function getCookie(barcode,pwd){
     })
     
 }
-function getData(cookies){
+function getData(cookies,token){
     return new Promise(function(reslove,reject){
         superagent
             .get('http://222.24.3.7:8080/opac_two/reader/jieshuxinxi.jsp')
@@ -106,10 +105,18 @@ function getData(cookies){
                 var $ = cheerio.load(res.text);
                 $(' table tbody tr').slice(1).each(function(i){
                     var  xujiereg =  new RegExp(/Renew((.*));/);
+                    var guoqi = /过期暂停/;
                     var xuejieinform =$(this).html().match(xujiereg);
                     var informreg = new RegExp(/&apos;(.*)&apos;,&apos;(.*)&apos;,&apos;(.*)&apos;/);
-                    var  list = xuejieinform[2].match(informreg);
-                    var book= {
+                    if(xuejieinform){var  list = xuejieinform[2].match(informreg);
+                          
+                    }
+                    else{var list = $(this).text().match(guoqi)
+                }
+                if(list == null){
+                   
+                }
+               else if(list[1]){ var book= {
                         bookname:$(this).find('td').eq(2).text(),
                         number:$(this).find('td').eq(3).text(),
                         where:$(this).find('td').eq(4).text(),
@@ -119,10 +126,23 @@ function getData(cookies){
                         id1:list[2],
                         id2:list[3]
                     }
-                    meinform.push(book);
+                    
+                }
+                else{
+                     var book= {
+                        bookname:$(this).find('td').eq(2).text(),
+                        number:$(this).find('td').eq(3).text(),
+                        where:$(this).find('td').eq(4).text(),
+                        tip:$(this).find('td').eq(5).text(),
+                        data:$(this).find('td').eq(6).text(),
+                    }
+                }
+                if(book){
+                    meinform.push(book);}
              })
              reslove(meinform);
                 }
+                 
         }); 
       
     })
@@ -138,6 +158,68 @@ function getData(cookies){
 
 
 // //监听HTTP请求
+
+/**
+ * 数据库查询
+ */
+var rule     = new schedule.RecurrenceRule();  
+rule.dayOfWeek = [0, new schedule.Range(1, 6)];
+rule.hour = 14;
+rule.minute = 0;
+Date.prototype.Format = function(fmt) { //author: meizz 
+    var o = {
+        "M+": this.getMonth() + 1, //月份 
+        "d+": this.getDate(), //日 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+function getToday(){
+    return new Date().Format("yyyy-MM-dd");
+}
+var j = schedule.scheduleJob(rule, function(){
+       User.find().then(function(user){   
+           for(var i =0;i<user.length;i++){
+               getCookie(user[i].username,user[i].password,user[i].token).then(function(a){
+                for(var j =0;j<a.meinform.length;j++){
+                    var mouth = /(.*)\/(.*)\/(.*)/;
+                    var nowmouth = /(.*)-(.*)\-(.*)/;
+                    var today = getToday().match(nowmouth);
+                    var back = a.meinform[j].data.match(mouth);
+                    if(today[1] == back[1]&& today[2] == back[2]){
+                       if(back[3] - today[3]<=3){
+                           if(a.token)
+                           {var Url = 'https://zypc.xupt.edu.cn/oauth/wxsendtpl?access_token='+a.token;
+                           superagent
+                           .post(Url)
+                           .send({
+                               "template_id":"eLnTu-lNd9HJINhARIyWR6BEvq5mBWTqVeywkmcIip8",
+                               "url":"http://newlib.xupt.org/user/inform",
+                               "data":{ 
+                                   "first":{value:"再不还书就没钱吃包子了",
+                                   color:'blue'},
+                                   keyword1:{
+                                       value:a.meinform[j].bookname,
+                                   },
+                                   keyword2:{
+                                    value:a.meinform[j].data,color:"red"
+                                   } 
+                               }
+                           })
+                           .end(function(err,res){
+                           }
+                           )
+                        }
+                       }
+                    }
+                }
+            
+            })
+           }
+       })
+})
 
 mongoose.connect('mongodb://localhost:27018/book',function(err){
     if(err){
