@@ -26,7 +26,11 @@
                 <p><i>所在书库：</i>{{a.where}}</p>
                 <p><i>当前借阅情况：</i>{{a.tip}}</p>
                 <p><i>还书日期：</i>{{a.data}}</p>
+                {% if a.renewnumber %}
                 <p class="btn"><button class="renew" onclick="renew(this)" renewnumber="{{a.renewnumber}}" id1="{{a.id1}}" id2="{{a.id2}}" name="">续借</button></p>
+                {% else %}
+                <p class="btn" style="color:brown">该书已经过期，请尽快还书</p>
+                {% endif%}
             </div>
         </div>{% endfor %} {% endif %}
         <div class="page"></div>
