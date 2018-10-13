@@ -44,8 +44,8 @@ function getinfor(URL_token) {
                     reject('获取token失败')
 
                 } else {
-                    var access_token = res.body.access_token //获取到token
-
+                    var access_token = res.body.access_token //获取到token'
+                    
                     var URL_userinfor = URL_use + "?" + "access_token=" + access_token //请求数据的接口
                     //获取用户信息的请求
                     superagent
@@ -54,7 +54,8 @@ function getinfor(URL_token) {
                             if (err) {
                                 reject('获取用户信息失败')
                             } else {
-                                resolve(res.body) //获取到用户信息，并将用户信息作为参数传给resolve,,将会在.then()中执行
+                                
+                                resolve({inform:res.body,token:access_token}) //获取到用户信息，并将用户信息作为参数传给resolve,,将会在.then()中执行
     
                             }
                         })
@@ -66,7 +67,23 @@ function getinfor(URL_token) {
 router.get('/token',function(req,res,next){
     var URL_token = getTokrnUrl + "?" + "grant_type=" + grant_type + "&" + "client_id=" + clientId + "&" + "client_secret=" + secret + "&" + "code=" + this.code + "&" + "redirect_uri=" + redirect_uri;
     getinfor(URL_token).then(data => { //将数据发送给前端
-        res.cookie('student_no',data.student_no, { maxAge: 900000, httpOnly: true });
+        res.cookie('student_no',data.inform.student_no);
+        User.findOne({
+            username:data.inform.student_no
+        }).then(function(userinfo){
+            if(userinfo){
+                userinfo.token = data.token;
+                userinfo.save();
+                console.log(userinfo)
+            }
+            else{
+                var user = new User({
+                    username:data.inform.student_no,
+                    token:data.token
+                    });
+                    user.save();
+            }
+        })
         res.redirect('/user/inform')
     }).catch(data => { //错误处理
         res.send(data)
@@ -139,15 +156,22 @@ function getData(cookies){
                     reject(err)
                 }
                 else{
-                    
                     var meinform = [];
                 var $ = cheerio.load(res.text);
                 $(' table tbody tr').slice(1).each(function(i){
                     var  xujiereg =  new RegExp(/Renew((.*));/);
+                    var guoqi = /过期暂停/;
                     var xuejieinform =$(this).html().match(xujiereg);
                     var informreg = new RegExp(/&apos;(.*)&apos;,&apos;(.*)&apos;,&apos;(.*)&apos;/);
-                    var  list = xuejieinform[2].match(informreg);
-                    var book= {
+                    if(xuejieinform){var  list = xuejieinform[2].match(informreg);
+                          
+                    }
+                    else{var list = $(this).text().match(guoqi)
+                }
+                if(list == null){
+                   
+                }
+               else if(list[1]){ var book= {
                         bookname:$(this).find('td').eq(2).text(),
                         number:$(this).find('td').eq(3).text(),
                         where:$(this).find('td').eq(4).text(),
@@ -157,7 +181,19 @@ function getData(cookies){
                         id1:list[2],
                         id2:list[3]
                     }
-                    meinform.push(book);
+                    
+                }
+                else{
+                     var book= {
+                        bookname:$(this).find('td').eq(2).text(),
+                        number:$(this).find('td').eq(3).text(),
+                        where:$(this).find('td').eq(4).text(),
+                        tip:$(this).find('td').eq(5).text(),
+                        data:$(this).find('td').eq(6).text(),
+                    }
+                }
+                if(book){
+                    meinform.push(book);}
              })
              reslove(meinform);
                 }
@@ -341,8 +377,8 @@ router.post('/nocollect',function(req,res){
     }).then(function(userInfo){
         for(var i = 0;i<userInfo.collect.length;i++){
             if(booknumber == userInfo.collect[i]){
-                User.update(
-                  {$pull:{collect:booknumber}
+                User.update({username:req.cookies.student_no},
+                  {$pull:{"collect":booknumber}
                 }).then(function(){
                      res.json('删除成功');
                 return;
